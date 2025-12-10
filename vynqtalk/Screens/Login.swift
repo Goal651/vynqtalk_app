@@ -4,12 +4,14 @@
 //
 //  Created by wigothehacker on 12/10/25.
 //
+
 import SwiftUI
 
 struct LoginScreen: View {
-    @EnvironmentObject var authVM:AuthViewModel
+    @EnvironmentObject var authVM: AuthViewModel
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var showModal: Bool = false
     
     func isValidEmail(_ email: String) -> Bool {
         let regex = #"^\S+@\S+\.\S+$"#
@@ -30,10 +32,11 @@ struct LoginScreen: View {
             )
             .ignoresSafeArea()
             
+            // Main content
             VStack(spacing: 30) {
                 // Title
                 VStack(spacing: 6) {
-                    Text("Welcome Back ")
+                    Text("Welcome Back")
                         .foregroundColor(.white.opacity(0.9))
                         .font(.title3)
                     
@@ -60,8 +63,8 @@ struct LoginScreen: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(
                                     !email.isEmpty && !isValidEmail(email)
-                                    ? Color.red.opacity(0.6)
-                                    : Color.white.opacity(0.25),
+                                        ? Color.red.opacity(0.6)
+                                        : Color.white.opacity(0.25),
                                     lineWidth: 1
                                 )
                         )
@@ -95,8 +98,10 @@ struct LoginScreen: View {
                 
                 // Login button
                 Button(action: {
-                    let result:Bool = authVM.login(email: email, password: password)
-                    print("Result from login \(result)")
+                    let result: Bool = authVM.login(email: email, password: password)
+                    withAnimation {
+                        showModal = result
+                    }
                 }) {
                     Text("Login")
                         .font(.title3.bold())
@@ -120,10 +125,23 @@ struct LoginScreen: View {
                 
                 Spacer()
             }
+            
+            // Modal overlay
+            if showModal {
+                ModalView(
+                    title: "Success!",
+                    description: "You have successfully logged in.",
+                    onClose: { withAnimation { showModal = false } }
+                )
+                .transition(.scale.combined(with: .opacity))
+                .zIndex(1) // ensure it's above main content
+            }
         }
         .navigationBarBackButtonHidden()
-        .toolbar{ToolbarItem(placement:.navigationBarLeading){
-            BackButton()
-        }}
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                BackButton()
+            }
+        }
     }
 }
