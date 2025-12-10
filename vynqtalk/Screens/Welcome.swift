@@ -49,7 +49,7 @@ struct WelcomeScreen: View {
                 
                 
                 // Login button
-                NavigationLink(destination: WelcomeScreen()) {
+                NavigationLink(destination: LoginScreen()) {
                     Text("Login")
                         .font(.title3.bold())
                         .foregroundColor(.black)
@@ -98,8 +98,3 @@ struct WelcomeScreen: View {
             .foregroundColor(.white.opacity(0.3))
     }
 }
-
-#Preview {
-    WelcomeScreen()
-}
-
