@@ -99,9 +99,11 @@ struct LoginScreen: View {
                 
                 // Login button
                 Button(action: {
-                    let result: Bool = authVM.login(email: email, password: password)
-                    withAnimation {
-                        showModal = result
+                    Task{
+                        let result: Bool = await authVM.login(email: email, password: password)
+                        withAnimation {
+                            showModal = result
+                        }
                     }
                 }) {
                     Text("Login")

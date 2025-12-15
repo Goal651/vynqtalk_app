@@ -21,7 +21,7 @@ final class APIClient: ObservableObject {
     
     static let shared = APIClient()
     
-    private let baseURL = "https://yourapi.com/api/v1"
+    private let baseURL = "http://10.12.74.234:8080/api/v2"
     private var logoutListeners: [() -> Void] = []
     
     private init() {}
@@ -82,10 +82,11 @@ final class APIClient: ObservableObject {
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
-        
+    
         if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
             logout()
             throw URLError(.userAuthenticationRequired)
