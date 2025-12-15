@@ -19,22 +19,24 @@ class WebSocketManager: ObservableObject, SwiftStompDelegate {
 
     // Connect to the STOMP WebSocket
     func connect(token: String) {
-        guard let url = URL(string: "ws://10.12.74.234:8080/api/v2/ws") else {
+        guard let url = URL(string: "ws://10.12.74.234:8080/ws?token=\(token)") else {
             lastError = "Invalid WebSocket URL"
+            print(lastError!)
             return
         }
 
-        swiftStomp = SwiftStomp(
-            host: url,
-            headers: [
-                "Authorization": "Bearer \(token)"
-            ]
-        )
-
+        // Initialize SwiftStomp
+        swiftStomp = SwiftStomp(host: url)
         swiftStomp.delegate = self
-        swiftStomp.connect()
-    }
 
+        // Attempt connection with headers
+        do {
+            swiftStomp.connect()
+        } catch {
+            lastError = "Failed to connect: \(error.localizedDescription)"
+            print(lastError!)
+        }
+    }
 
     // Subscribe to topics
     func subscribeToMetrics() {

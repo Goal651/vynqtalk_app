@@ -14,6 +14,7 @@ struct LoginScreen: View {
     @State private var password: String = ""
     @State private var showModal: Bool = false
     @AppStorage("loggedIn") var loggedIn: Bool = false
+    @AppStorage("token") var authToken:String = " "
     
     func isValidEmail(_ email: String) -> Bool {
         let regex = #"^\S+@\S+\.\S+$"#
@@ -102,7 +103,7 @@ struct LoginScreen: View {
                 Button(action: {
                     Task{
 //                        let result: Bool = await authVM.login(email: email, password: password)
-                        wsM.connect(token: "whowhe")
+                        wsM.connect(token: authToken)
                         withAnimation {
                             showModal = false
                         }
