@@ -132,7 +132,10 @@ struct LoginScreen: View {
                 ModalView(
                     title: "Success!",
                     description: "You have successfully logged in.",
-                    onClose: { withAnimation { showModal = false } }
+                    onClose: { withAnimation {
+                        showModal = false
+                        HomeScreen()
+                    }  }
                 )
                 .transition(.scale.combined(with: .opacity))
                 .zIndex(1) // ensure it's above main content

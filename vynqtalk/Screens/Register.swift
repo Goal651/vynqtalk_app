@@ -177,7 +177,10 @@ struct RegisterScreen: View {
                 ModalView(
                     title: "Account Created!",
                     description: "Welcome to Vynqtalk 🎉",
-                    onClose: { withAnimation { showModal = false } }
+                    onClose: { withAnimation {
+                        showModal = false
+                        HomeScreen()
+                    } }
                 )
                 .transition(.scale.combined(with: .opacity))
                 .zIndex(1)

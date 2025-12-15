@@ -74,7 +74,7 @@ struct WelcomeScreen: View {
                 
                 
                 // Register button
-                NavigationLink(destination: RegisterScreen()) {
+                NavigationLink(destination: HomeScreen()) {
                     Text("Register")
                         .font(.title3.bold())
                         .foregroundColor(.white)
