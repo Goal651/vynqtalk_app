@@ -7,18 +7,9 @@
 
 import SwiftUI
 
-
 struct ChatScreen: View {
-    
-    // Mock messages (WhatsApp-like)
-    let messages: [Message] = [
-        Message(text: "Hey 👋", isMe: false, time: "09:41"),
-        Message(text: "Hi! How are you?", isMe: true, time: "09:42"),
-        Message(text: "I'm good, working on the app 😄", isMe: false, time: "09:43"),
-        Message(text: "Nice, SwiftUI or React?", isMe: true, time: "09:44"),
-        Message(text: "SwiftUI 🔥", isMe: false, time: "09:45"),
-        Message(text: "Clean choice.", isMe: true, time: "09:46")
-    ]
+    @EnvironmentObject var messageVM: MessageViewModel
+    @State private var messageText: String = ""
     
     var body: some View {
         ZStack {
@@ -36,7 +27,7 @@ struct ChatScreen: View {
             
             VStack(spacing: 0) {
                 
-                // Header (WhatsApp-style)
+                // Header
                 HStack(spacing: 12) {
                     Image(systemName: "person.circle.fill")
                         .font(.system(size: 36))
@@ -60,7 +51,7 @@ struct ChatScreen: View {
                 // Messages
                 ScrollView {
                     VStack(spacing: 12) {
-                        ForEach(messages) { message in
+                        ForEach(messageVM.messages) { message in
                             MessageBubble(message: message)
                         }
                     }
@@ -68,19 +59,24 @@ struct ChatScreen: View {
                     .padding(.vertical, 10)
                 }
                 
-                // Input bar (UI only)
+                // Input bar
                 HStack(spacing: 12) {
-                    TextField("Message", text: .constant(""))
+                    TextField("Message", text: $messageText)
                         .padding(12)
                         .background(Color.white.opacity(0.08))
                         .cornerRadius(20)
                         .foregroundColor(.white)
                     
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(.white)
-                        .padding(12)
-                        .background(Color.blue.opacity(0.8))
-                        .clipShape(Circle())
+                    Button {
+                        messageVM.sendMessage(messageText)
+                        messageText = ""
+                    } label: {
+                        Image(systemName: "paperplane.fill")
+                            .foregroundColor(.white)
+                            .padding(12)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                    }
                 }
                 .padding()
                 .background(Color.black.opacity(0.5))
