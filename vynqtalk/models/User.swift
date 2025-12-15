@@ -10,12 +10,11 @@ struct User: Identifiable, Decodable {
     let avatar: String?
     let email: String
     let userRole: String
-    let status: String?
+    let status: String
     let bio: String?
-    let lastActive: String?      // or Date, if backend returns ISO string
-    let createdAt: String?       // or Date
+    let lastActive: String
+    let createdAt: String
 }
-
 
 // Supporting structs
 enum UserRole :Decodable{
