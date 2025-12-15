@@ -49,7 +49,7 @@ struct WelcomeScreen: View {
                 
                 
                 // Login button
-                NavigationLink(destination: LoginScreen()) {
+                NavigationLink(destination: ChatScreen()) {
                     Text("Login")
                         .font(.title3.bold())
                         .foregroundColor(.black)
