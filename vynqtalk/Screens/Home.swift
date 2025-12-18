@@ -38,14 +38,23 @@ struct HomeScreen: View {
                 // User list
                 ScrollView {
                     VStack(spacing: 14) {
-                        if userVM.users.isEmpty {
-                            Text("No users yet")
+                        if userVM.isLoading {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.top, 30)
+                        } else if let err = userVM.errorMessage {
+                            Text(err)
+                                .foregroundColor(.red.opacity(0.85))
+                                .padding(.top, 30)
+                        } else if userVM.users.isEmpty {
+                            Text("No users found")
                                 .foregroundColor(.white.opacity(0.7))
                                 .padding(.top, 30)
                         } else {
                             ForEach(userVM.users) { user in
                                 Button {
-                                    nav.push(.chat(userId: user.id ?? 0))
+                                    guard let id = user.id else { return }
+                                    nav.push(.chat(userId: id, name: user.name ?? "Chat"))
                                 } label: {
                                     UserComponent(user: user)
                                 }
@@ -61,5 +70,8 @@ struct HomeScreen: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .task {
+            await userVM.loadUsers()
+        }
     }
 }

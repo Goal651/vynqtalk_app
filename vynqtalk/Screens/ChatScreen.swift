@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct ChatScreen: View {
+    @EnvironmentObject var authVM: AuthViewModel
     @EnvironmentObject var messageVM: MessageViewModel
+    @EnvironmentObject var wsM: WebSocketManager
     @State private var messageText: String = ""
     let userId: Int
+    let userName: String
     
     var body: some View {
         ZStack {
@@ -35,7 +38,7 @@ struct ChatScreen: View {
                         .foregroundColor(.white.opacity(0.9))
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("User \(userId)")
+                        Text(userName)
                             .foregroundColor(.white)
                             .font(.headline)
                         
@@ -52,6 +55,16 @@ struct ChatScreen: View {
                 // Messages
                 ScrollView {
                     VStack(spacing: 12) {
+                        if messageVM.isLoading {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.top, 20)
+                        }
+                        if let err = messageVM.errorMessage {
+                            Text(err)
+                                .foregroundColor(.red.opacity(0.85))
+                                .padding(.top, 20)
+                        }
                         ForEach(messageVM.messages) { message in
                             MessageBubble(message: message)
                         }
@@ -69,7 +82,11 @@ struct ChatScreen: View {
                         .foregroundColor(.white)
                     
                     Button {
-                        messageVM.sendMessage(messageText)
+                        wsM.sendChatMessage(
+                            senderId: authVM.userId,
+                            receiverId: userId,
+                            content: messageText
+                        )
                         messageText = ""
                     } label: {
                         Image(systemName: "paperplane.fill")
@@ -87,6 +104,21 @@ struct ChatScreen: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 BackButton()
+            }
+        }
+        .task {
+            await messageVM.loadConversation(meId: authVM.userId, otherUserId: userId)
+        }
+        .onChange(of: wsM.incomingMessage?.id) { _, _ in
+            guard let m = wsM.incomingMessage else { return }
+            // only append messages that belong to this chat
+            let s = m.sender?.id ?? -1
+            let r = m.receiver?.id ?? -1
+            let me = authVM.userId
+            if (s == me && r == userId) || (s == userId && r == me) {
+                Task { @MainActor in
+                    messageVM.append(m)
+                }
             }
         }
     }

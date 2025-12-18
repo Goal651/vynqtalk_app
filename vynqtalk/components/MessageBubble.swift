@@ -7,12 +7,11 @@
 import SwiftUI
 
 struct MessageBubble: View {
+    @EnvironmentObject var authVM: AuthViewModel
     let message: Message
-    // Placeholder for the current user's ID. In a real app, this would come from an AuthViewModel or similar.
-    let currentUserID: Int = 1 // Assuming user with ID 1 is the current user for mock purposes
 
     var isMe: Bool {
-        message.sender?.id == currentUserID
+        message.sender?.id == authVM.userId
     }
 
     var formattedTime: String {

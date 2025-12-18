@@ -150,13 +150,14 @@ struct RegisterScreen: View {
                 
                 // Register button
                 Button {
-                    let result = authVM.register(
-                        email: email, name: name, password: password
-                    )
-                    
-                    if result {
-                        loggedIn = true
-                        withAnimation { showModal = true }
+                    Task {
+                        let ok = await authVM.register(email: email, name: name, password: password)
+                        if ok {
+                            loggedIn = true
+                            withAnimation { showModal = true }
+                        } else {
+                            withAnimation { showModal = true }
+                        }
                     }
                 } label: {
                     Text("Register")
@@ -180,7 +181,7 @@ struct RegisterScreen: View {
                     description: "Welcome to Vynqtalk 🎉",
                     onClose: { withAnimation {
                         showModal = false
-                        nav.reset(to: .home)
+                        nav.reset(to: .main)
                     } }
                 )
                 .transition(.scale.combined(with: .opacity))

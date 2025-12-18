@@ -9,10 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var nav: NavigationCoordinator
+    @AppStorage("loggedIn") private var loggedIn: Bool = false
     
     var body: some View {
         NavigationStack(path: $nav.path) {
-            WelcomeScreen()
+            Group {
+                if loggedIn {
+                    MainTabView()
+                } else {
+                    WelcomeScreen()
+                }
+            }
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .welcome:
@@ -21,10 +28,10 @@ struct ContentView: View {
                         LoginScreen()
                     case .register:
                         RegisterScreen()
-                    case .home:
-                        HomeScreen()
-                    case .chat(let userId):
-                        ChatScreen(userId: userId)
+                    case .main:
+                        MainTabView()
+                    case .chat(let userId, let name):
+                        ChatScreen(userId: userId, userName: name)
                     }
                 }
         }

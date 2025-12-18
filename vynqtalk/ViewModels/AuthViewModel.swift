@@ -13,7 +13,8 @@ class AuthViewModel:ObservableObject{
     private let nav: NavigationCoordinator
     
     @AppStorage("loggedIn") var loggedIn: Bool = false
-    @AppStorage("token") var authToken:String = " "
+    @AppStorage("auth_token") var authToken: String = ""
+    @AppStorage("user_id") var userId: Int = 0
 
     init(nav: NavigationCoordinator) {
         self.nav = nav
@@ -35,9 +36,10 @@ class AuthViewModel:ObservableObject{
             // ✅ accessToken is NOT optional
             APIClient.shared.saveAuthToken(loginData.accessToken)
             APIClient.shared.loggedIn = true
-            authToken=loginData.accessToken
+            authToken = loginData.accessToken
+            userId = loginData.user.id ?? 0
 
-            nav.reset(to: .home)
+            nav.reset(to: .main)
             return true
 
         } catch {
@@ -47,7 +49,28 @@ class AuthViewModel:ObservableObject{
     }
 
     
-    func register(email:String,name:String,password:String) -> Bool{
-        return true
+    @MainActor
+    func register(email: String, name: String, password: String) async -> Bool {
+        do {
+            let payload = SignupRequest(email: email, name: name, password: password)
+            let response: APIResponse<LoginResponse> =
+                try await APIClient.shared.post("/auth/signup", data: payload)
+
+            guard response.success,
+                  let signupData = response.data else {
+                return false
+            }
+
+            APIClient.shared.saveAuthToken(signupData.accessToken)
+            APIClient.shared.loggedIn = true
+            authToken = signupData.accessToken
+            userId = signupData.user.id ?? 0
+
+            nav.reset(to: .main)
+            return true
+        } catch {
+            print("Register error:", error)
+            return false
+        }
     }
 }

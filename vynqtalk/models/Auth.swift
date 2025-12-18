@@ -7,13 +7,18 @@
 
 import Foundation
 
-struct LoginRequest:Encodable{
-    let email:String
-    let password:String 
+struct LoginRequest: Encodable {
+    let email: String
+    let password: String
 }
 
+struct SignupRequest: Encodable {
+    let email: String
+    let name: String
+    let password: String
+}
 
-struct LoginResponse:Decodable{
-    let user:User
-    let accessToken:String
+struct LoginResponse: Decodable {
+    let user: User
+    let accessToken: String
 }

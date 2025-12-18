@@ -24,7 +24,7 @@ final class APIClient: ObservableObject {
     private let baseURL = "http://10.12.73.3:8080/api/v2"
     private var logoutListeners: [() -> Void] = []
 
-    private static let jsonDecoder: JSONDecoder = {
+    static let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
@@ -60,7 +60,7 @@ final class APIClient: ObservableObject {
         return decoder
     }()
 
-    private static let jsonEncoder: JSONEncoder = {
+    static let jsonEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .custom { date, encoder in
             var container = encoder.singleValueContainer()
